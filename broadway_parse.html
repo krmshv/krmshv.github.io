@@ -16,6 +16,7 @@
    */
 
     let array = [];
+    let pageToken = '';
     
     
   function authenticate() {
@@ -33,28 +34,24 @@
     
     
   // Make sure the client is loaded and sign-in is complete before calling this method.
-  function execute(pageToken) {
+  function execute() {
     return gapi.client.youtube.playlistItems.list({
-      "part": [
-        "contentDetails"
-      ],
+      "part": ["contentDetails"],
         "pageToken": pageToken,
       "maxResults": 50,
       "playlistId": "UUfWqafyV4h6S_U_QpjT-6Ew"
-    })
-        .then(function(response) {
-                // Handle the results here (response.result has the parsed body).
-                console.log("Response", response);
-                for (var i=0; i<response.result.items.legth; i++) {
-                    array.push(response.result.items[i].contentDetails.videoId);
-                }
-        if (response.result.nextPageToken !== undefined) {
-            execute(response.result.nextPageToken);
+    }).then(function(response){
+        // Handle the results here (response.result has the parsed body).
+        console.log("Response", response);
+        for (var i=0; i<response.result.items.length; i++) {
+            array.push(response.result.items[i].contentDetails.videoId);
         }
-        
-        
-              },
-              function(err) { console.error("Execute error", err); });
+        if (response.result.nextPageToken !== undefined) {
+            pageToken = response.result.nextPageToken;
+            execute();
+        }
+    },
+    function(err) { console.error("Execute error", err); });
   }
     
     
@@ -63,6 +60,6 @@
   });
 </script>
 <button onclick="authenticate().then(loadClient)">authorize and load</button>
-<button onclick="execute('')">execute</button>
+<button onclick="execute()">execute</button>
 </body>
 </html>
