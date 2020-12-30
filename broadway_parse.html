@@ -34,9 +34,6 @@
     
   // Make sure the client is loaded and sign-in is complete before calling this method.
   function execute(pageToken) {
-      if (pageToken === undefined) {
-          pageToken = '';
-      }
     return gapi.client.youtube.playlistItems.list({
       "part": [
         "contentDetails"
@@ -66,6 +63,6 @@
   });
 </script>
 <button onclick="authenticate().then(loadClient)">authorize and load</button>
-<button onclick="execute()">execute</button>
+<button onclick="execute('')">execute</button>
 </body>
 </html>
