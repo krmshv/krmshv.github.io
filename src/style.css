@@ -34,6 +34,14 @@
     margin-right: auto;
 }
 
+.rounded {
+    height: 250px;
+}
+
+.rounded > p {
+    font-size: 30pt;
+}
+
 #year::after {
     content: 'года';
     font-size: 10px;
@@ -57,4 +65,10 @@
 #seconds::after {
     content: 'секунд';
     font-size: 10px;
+}
+
+#search {
+    width: 100px;
+    height: 100px;
+    background-color: brown;
 }
