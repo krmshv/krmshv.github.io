@@ -2,58 +2,114 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=0.86, maximum-scale=3.0, minimum-scale=0.86, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>roll broadway</title>
 
     <link rel="stylesheet" href="src/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
 </head>
-<body>
-   <div class="container" style="height: 650px; position: relative">
+<body onkeypress="keyUp(this, event);">
+   <div class="container" style="padding: 0!important;">
         <div id="player"></div>
-        <button type="button" class="btn btn-primary btn-lg" onclick="getRandomVideo();" style="margin: auto;left: 0;right: 0;bottom: 2%;position: absolute;width: 850px;height: 130px;">ROLL</button>
+        <button type="button" id="button" onclick="roll();">ROLL</button>
     </div>
     
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    
     <script src="playlist.js"></script>
-    
     <script>
-        let playerWidth,
-            playerHeight;
+        let workAreaWidth,
+            workAreaHeight,
+            videoUrl;
+
+        function roll() {
+            window.videoUrl = getRandomVideoUrl();
+            showPlayer(window.videoUrl);
+        }
+
+        function isLandscapeOrientation() {
+            if (document.documentElement.scrollWidth > document.documentElement.scrollHeight)
+                return true;
+            else
+                return false;
+        }
 
         function getIFrameWidth() {
             let windowsWidth = document.documentElement.scrollWidth;
-            return Math.trunc(850*windowsWidth/1366);
+            if (isLandscapeOrientation()) {
+                return Math.trunc(windowsWidth*850/1366);
+            } else {
+                return Math.trunc(windowsWidth*410/540);
+            }
         }
         
         function getRandomNumber(max) {
             return Math.floor(Math.random() * Math.floor(max));
         }
-        
-        function getRandomVideo() {
-            $('#player').remove();
-            let number = getRandomNumber(ids.length);
-            let id = ids[number];
-            $('.container').append('<div id="player"></div>');
-            let ytWidth = getIFrameWidth();
-            let ytHeigth = Math.trunc(ytWidth*478/850);
-            $('#player').append('<iframe width="' + ytWidth + '" height="' + ytHeigth + '" src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay="1"; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>');
+
+        function initScales() {
+            window.workAreaWidth = getIFrameWidth() + 'px';
+            window.workAreaHeight = Math.trunc(getIFrameWidth() * 478 / 850) + 'px';
+
+            let conteiner = document.getElementsByClassName('container')[0];
+            conteiner.style.width = window.workAreaWidth;
+            let button = document.getElementById('button');
+            button.style.width = window.workAreaWidth;
+            //let divPlayer = document.getElementById('player');
+        }
+
+        function showPlayer(src) {
+            let player = document.getElementById('player');
+            player.parentNode.removeChild(player);
+
+            let ytWidth = window.workAreaWidth,
+                ytHeigth = window.workAreaHeight;
+
+            let conteiner = document.getElementsByClassName('container')[0];
+            let newPlayer = document.createElement('div');
+                let attrs = {
+                    'id': 'player',
+                    'style': 'height:' + ytHeigth
+                }
+                Object.assign(newPlayer, attrs);
+                conteiner.appendChild(newPlayer);
+
+            let newEl = document.createElement('iframe');
+                attrs = {
+                     'width': ytWidth,
+                     'height': ytHeigth,
+                     'src': src,
+                     'frameborder': 0,
+                     'allow': 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+                     'autoplay': 1,
+                     'title': "YouTube video player",
+                     'allowfullscreen': 'allowfullscreen'
+
+                 }
+                 Object.assign(newEl, attrs);
+
+                newPlayer.appendChild(newEl);
         }
         
-        $(document).ready(function(){
-            
-            getRandomVideo();
-            $('.btn').click(getRandomVideo());
-            $(document).keyup(function(e) {
-                if (e.keyCode === 32) {
-                    e.preventDefault;
-                    getRandomVideo();
-	           }
-            });
-        });
+        function getRandomVideoUrl() {
+            let number = getRandomNumber(ids.length);
+
+            return "https://www.youtube.com/embed/" + ids[number];
+        }
+
+        function keyUp(oToCheckField, event) {
+            if (event.charCode === 32) {
+                roll();
+            }
+        }
+        
+        window.onload = function(){
+            initScales();
+
+            roll();
+
+            window.onresize = function(){
+                initScales();
+                showPlayer("https://www.youtube.com/embed/" + window.videoId);
+            };
+        };
     </script>
 </body>
 </html>
