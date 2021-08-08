@@ -18,11 +18,11 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarCollapse">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
-      </li>
       <li class="nav-item">
-        <a class="nav-link" href="broadway.html">Broadway</a>
+        <a class="nav-link" href="index.html">Home</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="broadway.html">Broadway <span class="sr-only">(current)</span></a>
       </li>
     </ul>
     <form class="form-inline mt-2 mt-md-0" disabled>
@@ -32,7 +32,7 @@
   </div>
 </nav>
 
-   <div class="container" style="padding: 0!important;">
+   <div class="wrap-content" style="padding: 0!important;">
         <div id="player"></div>
         <button type="button" id="button" onclick="roll();">ROLL</button>
     </div>
@@ -72,7 +72,7 @@
             window.workAreaWidth = getIFrameWidth() + 'px';
             window.workAreaHeight = Math.trunc(getIFrameWidth() * 478 / 850) + 'px';
 
-            let conteiner = document.getElementsByClassName('container')[0];
+            let conteiner = document.getElementsByClassName('wrap-content')[0];
             conteiner.style.width = window.workAreaWidth;
             let button = document.getElementById('button');
             button.style.width = window.workAreaWidth;
@@ -81,19 +81,12 @@
 
         function showPlayer(src) {
             let player = document.getElementById('player');
-            player.parentNode.removeChild(player);
+            if (player.firstChild !== null) {
+                player.removeChild(player.firstChild);
+            }
 
             let ytWidth = window.workAreaWidth,
                 ytHeigth = window.workAreaHeight;
-
-            let conteiner = document.getElementsByClassName('container')[0];
-            let newPlayer = document.createElement('div');
-                let attrs = {
-                    'id': 'player',
-                    'style': 'height:' + ytHeigth
-                }
-                Object.assign(newPlayer, attrs);
-                conteiner.appendChild(newPlayer);
 
             let newEl = document.createElement('iframe');
                 attrs = {
@@ -109,7 +102,7 @@
                  }
                  Object.assign(newEl, attrs);
 
-                newPlayer.appendChild(newEl);
+                player.appendChild(newEl);
         }
         
         function getRandomVideoUrl() {
@@ -123,17 +116,57 @@
                 roll();
             }
         }
+
+        function showHideMenu(show) {
+            let navbar = document.getElementsByTagName('nav')[0];
+
+            if (show !== undefined) {
+                navbar.classList.toggle('d-none', show);
+            } else {
+                navbar.classList.toggle('d-none');
+            }
+        }
+
+        function castling() {
+            var buttonPosition = document.getElementById('button').offsetTop;
+                if (buttonPosition + 100 > window.screen.height) {
+                    showHideMenu(true);
+                    let wrapContent = document.getElementsByClassName('wrap-content')[0],
+                        button = document.getElementById('button'),
+                        player = document.getElementById('player');
+
+                    wrapContent.setAttribute('style', 'width:'+window.screen.width-50+'px;padding: 0.5em;');
+                    button.setAttribute('style', 'height: 14em;width:4em;float: right;display: inline-block;margin-top:0');
+                    player.setAttribute('style', 'height: '+workAreaHeight+';width: '+workAreaWidth+';display: inline-block;float: left;');
+
+                    document.addEventListener('click', function(e) {
+                        const player = document.getElementById('player');
+                        const button = document.getElementById('button');
+                        const target = e.target;
+                        const its_player = target == player || player.contains(target);
+                        const its_button = target == button;
+                        
+                        if (!its_player && !its_button) {showHideMenu()}
+                    });
+                }
+        }
         
         window.onload = function(){
+
             initScales();
 
             roll();
 
+            castling();
+
             window.onresize = function(){
                 initScales();
                 showPlayer("https://www.youtube.com/embed/" + window.videoId);
+                castling();
             };
         };
     </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
 </body>
 </html>
