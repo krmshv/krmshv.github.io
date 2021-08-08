@@ -28,10 +28,6 @@
             let windowsWidth = document.documentElement.scrollWidth;
             return Math.trunc(850*windowsWidth/1366);
         }
-        function getIFrameHeight() {
-            let windowsWidth = document.documentElement.scrollWidth;
-            return Math.trunc(windowsWidth*478/850);
-        }
         
         function getRandomNumber(max) {
             return Math.floor(Math.random() * Math.floor(max));
@@ -43,7 +39,7 @@
             let id = ids[number];
             $('.container').append('<div id="player"></div>');
             let ytWidth = getIFrameWidth();
-            let ytHeigth = getIFrameHeight();
+            let ytHeigth = Math.trunc(ytWidth*478/850);
             $('#player').append('<iframe width="' + ytWidth + '" height="' + ytHeigth + '" src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay="1"; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>');
         }
         
